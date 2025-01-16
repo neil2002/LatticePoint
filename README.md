@@ -1,12 +1,13 @@
-# AI-Powered Data Analysis and Visualization Tool
+# Lattice AI
 
 This project consists of a Vue.js frontend and FastAPI backend that enables users to analyze and visualize data using natural language prompts powered by Google's Gemini AI.
 
 ## Project Structure
-
+```markdown
 src/
 ├── Frontend/ # Vue.js frontend application
 └── Backend/   # FastAPI backend service
+```
 
 ## Prerequisites
 
@@ -33,7 +34,7 @@ venv\Scripts\activate
 ```sh
 pip install -r requirements.txt
 ```
-5. Create a [`.env` file](./Backend/.env) in the Backend directory:
+5. Create a [`.env`](./Backend/.env) in the Backend directory:
 ```markdown
 GOOGLE_API_KEY=your_gemini_api_key_here
 ```

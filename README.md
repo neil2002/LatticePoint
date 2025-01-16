@@ -5,8 +5,8 @@ This project consists of a Vue.js frontend and FastAPI backend that enables user
 ## Project Structure
 ```markdown
 src/
-├── Frontend/ # Vue.js frontend application
-└── Backend/   # FastAPI backend service
+├── Backend/   # FastAPI backend service
+└── Frontend/ # Vue.js frontend application
 ```
 
 ## Prerequisites

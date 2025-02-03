@@ -1,131 +1,156 @@
-# Lattice AI
+# Interactive Data Analysis Dashboard
 
-This project consists of a Vue.js frontend and FastAPI backend that enables users to analyze and visualize data using natural language prompts powered by Google's Gemini AI.
+A sophisticated web application that combines data processing, analysis, and visualization capabilities with an intuitive dashboard builder interface. Built with Vue.js and FastAPI, this platform enables users to create custom visualizations and perform complex analyses through a user-friendly interface.
 
-## Project Structure
-```markdown
-src/
-├── Backend/   # FastAPI backend service
-└── Frontend/ # Vue.js frontend application
-```
+## Project Overview
+
+This application enables users to:
+- Create custom data visualizations through a drag-and-drop interface
+- Process and analyze data through natural language queries
+- Build sophisticated dashboards without writing code
+- Perform complex analyses through PySpark integration
+- Access AI-powered insights through Ollama integration
+
+## Demo Video
+
+Watch our demo video to see the application in action:
+
+https://github.com/Janarthanan-Gnanamurthy/LatticePoint/demo.mp4
+
+## Workflow
+
+![Interactive Data Analysis Workflow](./workflow.png)
+
+## Dashboard Builder
+
+The Dashboard Builder provides:
+- Drag-and-drop interface for creating custom dashboards
+- Multiple chart types and visualization options
+- Real-time data updates and previews
+- Customizable layouts and settings
+- Interactive data filtering
+- Save and share functionality
+- Version history management
+
+### Using the Dashboard Builder
+
+1. Access the dashboard builder interface
+2. Start with a blank canvas
+3. Add visualization components through drag-and-drop
+4. Configure data sources and chart settings
+5. Use natural language queries for data processing
+6. Save and share your dashboard configurations
+
+## Technologies Used
+
+### Frontend
+- Vue.js 3.5 for the user interface
+- Pinia for state management
+- Vue Router for navigation
+- Chart.js for interactive data visualization
+- Tailwind CSS with DaisyUI for styling
+
+### Backend
+- FastAPI for the REST API implementation
+- PySpark for distributed data processing
+- Ollama for local AI model integration
+- Python 3.8+ for backend services
 
 ## Prerequisites
 
-- Python 3.8 or higher
-- Node.js 16 or higher
-- npm/yarn
-- Java Runtime Environment (JRE) for Apache Spark
+- Node.js (version 18.0.0 or higher)
+- Python (version 3.8 or higher)
+- Java Runtime Environment (JRE) for PySpark
+- Ollama installation
 
-## Backend Setup
+## Installation
 
-1. Navigate to the Backend directory:
-```sh
-cd Backend
-```
-2. Create a virtual environment:
-```sh
-python -m venv venv
-```
-3. Activate the virtual environment:
-```sh
-venv\Scripts\activate
-```
-4. Install dependencies
-```sh
-pip install -r requirements.txt
-```
-5. Create a [`.env`](./Backend/.env) in the Backend directory:
-```markdown
-GOOGLE_API_KEY=your_gemini_api_key_here
-```
-6. Start a Backend Server:
-```sh
-uvicorn main:app --reload --port 8000
-```
-The backend will be available at http://localhost:8000
+### Frontend Setup
 
-## Frontend Setup
-
-1. Navigate to the Frontend directory:
-```sh
-cd Frontend
+1. Clone the repository:
+```bash
+git clone [repository-url]
+cd [project-directory]
 ```
-2. Install Dependencies:
-```sh
+
+2. Install dependencies:
+```bash
 npm install
 ```
-3. Start the development server:
-```sh
+
+3. Configure environment:
+```bash
+cp .env.example .env
+```
+Edit the .env file to specify your backend API URL
+
+4. Start development server:
+```bash
 npm run dev
 ```
-The frontend will be available at http://localhost:5173
 
-<!-- Features
-File Upload Support:
+### Backend Setup
 
-CSV
-Excel (.xlsx, .xls)
-JSON
-Data Analysis:
+1. Create a Python virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows, use: venv\Scripts\activate
+```
 
-Natural language queries for data transformation
-PySpark-powered data processing
-Automated visualization generation
-Visualization Types:
+2. Install Python dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-Bar charts
-Line charts
-Pie charts
-Scatter plots
-Area charts
-Usage
-Open http://localhost:5173 in your browser
-Upload a data file (CSV/Excel/JSON)
-Enter a natural language prompt describing your analysis needs
-View the automatically generated visualization or transformed data
-Example Prompts
-"Show me a bar chart of sales by region"
-"Calculate the average revenue by product category"
-"Create a line chart showing monthly trends"
-"Show me the top 10 customers by revenue"
-Technology Stack
-Frontend
-Vue.js 3
-Chart.js
-Tailwind CSS
-DaisyUI
-Vite
-Backend
-FastAPI
-PySpark
-Pandas
-Google Gemini AI
-Python-dotenv
-Development
-Building for Production
-Frontend:
+3. Start the FastAPI server:
+```bash
+uvicorn main:app --reload
+```
 
-Backend:
+### Ollama Setup
 
-Troubleshooting
-If you encounter CORS issues:
+1. Install Ollama:
 
-Ensure the backend CORS settings match your frontend URL
-Check if the backend is running on port 8000
-File upload issues:
+For Unix-based systems:
+```bash
+curl https://ollama.ai/install.sh | sh
+```
 
-Verify file format is supported
-Check file size limits
-Visualization not rendering:
+For Windows:
+Download and install from https://ollama.ai/download
 
-Check browser console for errors
-Verify data format matches expected schema
-License
-MIT License
+2. Pull required model:
+```bash
+ollama pull deepseek-r1:8b
+```
 
-Contributing
-Fork the repository
-Create your feature branch
-Commit your changes
-Push to the branch
-Create a new Pull Request -->
+## API Structure
+
+The backend API provides these key endpoints:
+- `/process` - Handles data processing requests
+- `/analyze` - Manages analysis operations
+- `/dashboard` - Controls dashboard configurations
+
+## Development
+
+For building production assets:
+```bash
+npm run build
+```
+
+For running tests:
+```bash
+npm run test
+```
+
+## Contributing
+
+We welcome contributions to improve the platform. Please review our contributing guidelines before submitting pull requests.
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For technical support or questions, please create an issue in the GitHub repository. Our team actively monitors and responds to reported issues.

@@ -16,7 +16,7 @@ This application enables users to:
 Watch our demo video to see the application in action:
 
 
-https://github.com/user-attachments/assets/e3d1b8ad-1ee7-4d8b-811c-5456206ba5d1
+[https://github.com/user-attachments/assets/e3d1b8ad-1ee7-4d8b-811c-5456206ba5d1](https://youtu.be/nEpevi5AF5w)
 
 
 ## Workflow

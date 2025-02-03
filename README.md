@@ -16,7 +16,8 @@ This application enables users to:
 Watch our demo video to see the application in action:
 
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+[![Watch the video](https://img.youtube.com/vi/nEpevi5AF5w/0.jpg)](https://www.youtube.com/watch?v=nEpevi5AF5w)
+
 
 
 

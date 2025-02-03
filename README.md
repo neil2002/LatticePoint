@@ -15,7 +15,7 @@ This application enables users to:
 
 Watch our demo video to see the application in action:
 
-https://github.com/Janarthanan-Gnanamurthy/LatticePoint/demo.mp4
+[![Watch the video]](https://raw.githubusercontent.com/Janarthanan-Gnanamurthy/LatticePoint/demo.mp4)
 
 ## Workflow
 

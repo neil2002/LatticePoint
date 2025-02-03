@@ -3,14 +3,22 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any
 import pandas as pd
+import numpy as np
+from scipy import stats
 import os
 import re
 import google.generativeai as genai
 from datetime import datetime
 from pyspark.sql import SparkSession
+from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
+from pyspark.sql.window import Window
 from pyspark.sql.types import *
+from pyspark.ml.stat import Correlation
+from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.linalg import Vectors
 from dotenv import load_dotenv
+from agents import analyze_prompt_intent, get_chart_config, get_transformation_code, get_statistical_code
 
 load_dotenv()
 
@@ -36,146 +44,6 @@ class ChartConfig(BaseModel):
     aggregation: str
     chart_type: str
     title: str
-
-async def analyze_prompt_intent(prompt: str) -> Dict:
-    """Determine whether the prompt is requesting data transformation or visualization."""
-    print(f"Analyzing prompt intent for: {prompt}")
-
-    response_format = {
-    "intent": "visualization",
-    "reason": "Prompt explicitly requests a chart/graph visualization",
-    "visualization_type": "bar",
-    "transformation_type": None
-}
-
-    input_text = f"""Analyze the following prompt and determine if it's requesting data transformation or visualization:
-
-Prompt: {prompt}
-
-Provide a JSON response with:
-1. intent: Either 'visualization' or 'transformation'
-2. reason: Brief explanation of why this classification was chosen
-3. visualization_type: If intent is 'visualization', specify the chart type ('bar', 'line', 'pie', 'scatter', 'area'), else None
-4. transformation_type: If intent is 'transformation', specify the operation type ('aggregate', 'filter', 'join', 'compute'), else None
-5. Do not null instead use None, because python does not have null
-
-Example response format:
-{response_format}
-
-Provide only the JSON response, no explanations."""
-
-    try:
-        response = await model.generate_content_async(
-            input_text,
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.8,
-                top_p=0.95,
-                top_k=40,
-            )
-        )
-        print(f"Intent analysis response: {response.text}")
-        json = re.search(r"```json\n(.*?)\n```", response.text, re.DOTALL)
-        json = json.group(1) if json else response.text
-        print(json)
-        return eval(json)
-    except Exception as e:
-        print(f"Error analyzing prompt intent: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error analyzing prompt intent: {str(e)}")
-
-async def get_chart_config(prompt: str, columns: List[str]) -> Dict:
-    """Generate chart configuration based on natural language prompt."""
-    print(f"Generating chart config for prompt: {prompt} with columns: {columns}")
-    response_format = {
-    "chart_type": "bar",
-    "x_axis": "date",
-    "y_axis": "sales",
-    "aggregation": "sum",
-    "title": "Total Sales by Date"
-}
-    input_text = f"""Based on the following prompt, determine the appropriate chart configuration:
-
-Prompt: {prompt}
-
-Available columns: {', '.join(columns)}
-
-Generate a JSON configuration with:
-1. chart_type: 'bar', 'line', 'pie', 'scatter', or 'area'
-2. x_axis: column name for x-axis
-3. y_axis: column name for y-axis
-4. aggregation: 'sum', 'average', 'count', or 'none'
-5. title: chart title
-
-Example response format:
-{response_format}
-
-Provide only the JSON configuration, no explanations."""
-
-    try:
-        response = await model.generate_content_async(
-            input_text,
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.9,
-                top_p=0.95,
-                top_k=40,
-            )
-        )
-        print(f"Chart config response: {response.text}")
-        json = re.search(r"```json\n(.*?)\n```", response.text, re.DOTALL)
-        json = json.group(1) if json else response.text
-        print(json)
-        return eval(json)
-    except Exception as e:
-        print(f"Error generating chart configuration: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error generating chart configuration: {str(e)}")
-
-async def get_transformation_code(prompt: str, columns: List[str]) -> str:
-    """Generate PySpark transformation code based on prompt."""
-    print(f"Generating transformation code for prompt: {prompt} with columns: {columns}")
-
-    columns_context = "Available columns: " + ", ".join(columns)
-    input_text = f"""Write Python code to perform the following PySpark DataFrame transformation:
-
-{prompt}
-
-Available columns: {columns_context}
-
-Requirements:
-1. Use PySpark DataFrame operations (pyspark.sql.functions as F)
-2. Handle missing values appropriately
-3. Store result in 'transformed_df'
-4. Return a Spark DataFrame
-5. Use proper type conversions if needed
-
-Available imports:
-- from pyspark.sql import functions as F
-- from pyspark.sql.types import *
-- datetime
-
-Example format:
-```python
-transformed_df = df.withColumn('new_column', F.col('column1') * F.col('column2'))
-transformed_df = transformed_df.na.fill(0)  # Handle nulls
-```
-
-Provide only the code, no explanations."""
-
-    try:
-        response = await model.generate_content_async(
-            input_text,
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.5,
-                top_p=0.95,
-                top_k=40,
-            )
-        )
-        print(f"Transformation code response: {response.text}")
-        code_match = re.search(r"```python\n(.*?)\n```", response.text, re.DOTALL)
-        code = code_match.group(1) if code_match else response.text
-        print(f"Extracted transformation code: {code}")
-        return code
-    except Exception as e:
-        print(f"Error generating transformation code: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error generating transformation code: {str(e)}")
 
 def process_chart_data(data: List[Dict], config: Dict) -> Dict:
     """Process data according to chart configuration."""
@@ -312,6 +180,36 @@ async def process_data(file: UploadFile = File(...), prompt: str = Form(...)):
                 "visualization": visualization,
                 "config": chart_config
             }
+        elif intent_analysis['intent'] == 'statistical':
+            # Generate and execute statistical analysis code
+            statistical_code = await get_statistical_code(prompt, columns)
+            
+            # Create a restricted global environment
+            allowed_globals = {
+                'spark': spark,
+                'F': F,
+                'df': df,
+                'np': np,
+                'stats': stats,
+                'VectorAssembler': VectorAssembler,
+                'Correlation': Correlation
+            }
+            
+            # Execute the code
+            exec(statistical_code, allowed_globals)
+            stat_df = allowed_globals.get('stat_df')
+            
+            if stat_df is None:
+                raise ValueError("Statistical analysis did not produce a result")
+            
+            # Convert to pandas for response
+            result_df = stat_df.toPandas()
+            
+            response = {
+                "type": "statistical",
+                "data": result_df.to_dict('records'),
+                "statistical_type": intent_analysis['statistical_type']
+            }
         else:
             # Generate and execute transformation
             transformation_code = await get_transformation_code(prompt, columns)
@@ -324,7 +222,6 @@ async def process_data(file: UploadFile = File(...), prompt: str = Form(...)):
                 "rows": len(transformed_df)
             }
         
-        # print(f"Final response: {response}")
         return response
         
     except Exception as e:

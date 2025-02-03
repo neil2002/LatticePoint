@@ -6,6 +6,12 @@
         <canvas ref="chartCanvas"></canvas>
       </div>
     </div>
+    <!-- Statistical Results -->
+    <StatisticalResults
+      v-else-if="isStatistical"
+      :statisticalData="processedData.data[0]"
+      :statisticalType="processedData.statistical_type"
+    />
     <div v-else>
       <div class="bg-white rounded-lg shadow-md p-6">
         <h3 class="text-lg font-bold mb-4">Data Table</h3>
@@ -35,6 +41,7 @@
 <script>
 import Chart from 'chart.js/auto';
 import { nextTick } from 'vue';
+import StatisticalResults from './StatisticalResults.vue';
 
 export default {
   props: {
@@ -57,6 +64,10 @@ export default {
     isDataValid() {
       return this.processedData?.visualization?.data?.datasets?.[0]?.data?.length > 0;
     },
+
+    isStatistical() {
+      return this.processedData?.type === 'statistical';
+    }, 
     
     chartTitle() {
       return this.processedData?.visualization?.options?.plugins?.title?.text || 'Sales Data';

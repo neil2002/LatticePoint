@@ -1,4 +1,4 @@
-# Interactive Data Analysis Dashboard
+# Datafy AI Data Analysis Dashboard
 
 A sophisticated web application that combines data processing, analysis, and visualization capabilities with an intuitive dashboard builder interface. Built with Vue.js and FastAPI, this platform enables users to create custom visualizations and perform complex analyses through a user-friendly interface.
 
@@ -15,7 +15,9 @@ This application enables users to:
 
 Watch our demo video to see the application in action:
 
-[![Watch the video]](https://raw.githubusercontent.com/Janarthanan-Gnanamurthy/LatticePoint/demo.mp4)
+
+https://github.com/user-attachments/assets/e3d1b8ad-1ee7-4d8b-811c-5456206ba5d1
+
 
 ## Workflow
 
@@ -78,13 +80,7 @@ cd [project-directory]
 npm install
 ```
 
-3. Configure environment:
-```bash
-cp .env.example .env
-```
-Edit the .env file to specify your backend API URL
-
-4. Start development server:
+3. Start development server:
 ```bash
 npm run dev
 ```
